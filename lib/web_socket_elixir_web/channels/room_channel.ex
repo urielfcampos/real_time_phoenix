@@ -2,6 +2,7 @@ defmodule WebSocketElixirWeb.RoomChannel do
   use Phoenix.Channel
   alias WebSocketElixirWeb.Presence
   def join("room:lobby", _message, socket) do
+    send(self(), :after_join)
     {:ok, socket}
   end
 
@@ -24,7 +25,9 @@ defmodule WebSocketElixirWeb.RoomChannel do
     {:ok, _} = Presence.track(socket, socket.assigns.user_id, %{
       online_at: inspect(System.system_time(:second))
     })
+
     push(socket, "presence_state", Presence.list(socket))
+
     {:noreply, socket}
   end
 

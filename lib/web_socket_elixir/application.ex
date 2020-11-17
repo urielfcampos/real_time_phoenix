@@ -13,11 +13,11 @@ defmodule WebSocketElixir.Application do
       WebSocketElixirWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: WebSocketElixir.PubSub},
+      WebSocketElixirWeb.Presence,
       # Start the Endpoint (http/https)
       WebSocketElixirWeb.Endpoint,
       # Start a worker by calling: WebSocketElixir.Worker.start_link(arg)
       # {WebSocketElixir.Worker, arg},
-      WebSocketElixirWeb.Presence
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

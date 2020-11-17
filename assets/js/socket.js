@@ -7,9 +7,10 @@
 // Pass the token on params as below. Or remove it
 // from the params if you are not using authentication.
 import {Socket} from "phoenix"
-
+import LiveSocket from "phoenix_live_view"
+let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let socket = new Socket("/socket", {params: {token: window.userToken}})
-
+let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
 // When you connect, you'll often need to authenticate the client.
 // For example, imagine you have an authentication plug, `MyAuth`,
 // which authenticates the session and assigns a `:current_user`.
@@ -53,7 +54,8 @@ let socket = new Socket("/socket", {params: {token: window.userToken}})
 //
 // Finally, connect to the socket:
 socket.connect()
-
+liveSocket.connect()
+window.liveSocket = liveSocket
 // Now that you are connected, you can join channels with a topic:
 let channel = socket.channel("room:lobby", {})
 let chatInput = document.querySelector("#chat-input")
@@ -61,7 +63,6 @@ let messagesContainer = document.querySelector("#messages")
 let userContainer = document.querySelector("#users")
 
 chatInput.addEventListener("keypress", event => {
-  console.log(event)
   if (event.key === "Enter"){
     channel.push("new_msg", {body: chatInput.value})
     chatInput.value = ""
@@ -72,13 +73,6 @@ channel.on("new_msg", payload => {
   let messageItem = document.createElement("p")
   messageItem.innerText = `[${Date()} ${payload.body}]`
   messagesContainer.appendChild(messageItem)
-})
-
-channel.on("new_user", payload => {
-  let newUser = document.createElement("p")
-  newUser.innerText = `[${payload.body}]`
-  userContainer.appendChild(newUser)
-  
 })
 
 channel.join()
